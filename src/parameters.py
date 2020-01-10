@@ -13,7 +13,7 @@ PARAMETERS = {
         'initial_value': 0,
         'min_value': 0,
         'max_value': 3000,
-        'step': 10,
+        'step': 2,
         'device': {
             'class': LevelIndicator,
             'coordinates': (30, 30),
