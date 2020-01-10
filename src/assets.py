@@ -9,6 +9,8 @@ class AssetLibrary:
             'background': 'background_bronze.jpg',
             'speedometer': 'speedometer.png',
             'clock_hand': 'clock_hand.png',
+            'indicator_panel': 'indicator_panel.png',
+            'indicator_hand': 'indicator_hand.png',
         }
 
     def path(self, asset_name):
@@ -16,3 +18,6 @@ class AssetLibrary:
 
     def load(self, asset_name):
         return pygame.image.load(self.path(asset_name))
+
+
+assets = AssetLibrary()

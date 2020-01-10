@@ -1,8 +1,8 @@
 import pygame
 
-from display_manager import DisplayManager
-from event_manager import EventManager
-from zeppelin import Zeppelin
+from src.display_manager import DisplayManager
+from src.event_manager import EventManager
+from src.zeppelin import Zeppelin
 
 FPS = 30
 
@@ -27,4 +27,4 @@ class Game:
         return
 
     def view_tick(self):
-        pass
+        self.display_manager.update_display()
