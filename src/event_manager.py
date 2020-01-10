@@ -3,9 +3,8 @@ import pygame
 
 class EventManager:
 
-    def __init__(self, zeppelin, display):
+    def __init__(self, zeppelin):
         self.zeppelin = zeppelin
-        self.display = display
 
     def process_event(self, key):
         if key == pygame.K_h:

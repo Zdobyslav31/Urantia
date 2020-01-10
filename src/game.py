@@ -4,15 +4,13 @@ from src.display_manager import DisplayManager
 from src.event_manager import EventManager
 from src.zeppelin import Zeppelin
 
-FPS = 30
-
 
 class Game:
     def __init__(self):
         self.running = True
         self.zeppelin = Zeppelin()
         self.display_manager = DisplayManager(self.zeppelin)
-        self.event_manager = EventManager(self.zeppelin, self.display_manager)
+        self.event_manager = EventManager(self.zeppelin)
 
     def run(self):
         while self.running:
