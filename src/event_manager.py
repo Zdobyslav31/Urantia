@@ -12,4 +12,9 @@ class EventManager:
         if key == pygame.K_b:
             self.zeppelin.decrease_parameter('height')
 
+        if key == pygame.K_g:
+            self.zeppelin.increase_parameter('velocity')
+        if key == pygame.K_v:
+            self.zeppelin.decrease_parameter('velocity')
+
 

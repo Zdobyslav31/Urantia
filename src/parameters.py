@@ -1,4 +1,4 @@
-from src.devices import LevelIndicator
+from src.devices import LevelIndicator, GaugeIndicator
 
 INITIAL_VALUES = {
     'height': 0,
@@ -17,6 +17,17 @@ PARAMETERS = {
         'device': {
             'class': LevelIndicator,
             'coordinates': (30, 30),
+        }
+
+    },
+    'velocity': {
+        'initial_value': 0,
+        'min_value': 0,
+        'max_value': 80,
+        'step': 0.2,
+        'device': {
+            'class': GaugeIndicator,
+            'coordinates': (250, 30),
         }
 
     }

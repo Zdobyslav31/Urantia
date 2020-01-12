@@ -29,11 +29,12 @@ class DisplayManager:
 
     def initialize_devices(self):
         for parameter, data in PARAMETERS.items():
-            self.devices[parameter] = data['device']['class'](
-                values_range=(data['min_value'], data['max_value']),
-                coordinates=data['device']['coordinates'],
-                initial_value=data['initial_value'],
-            )
+            if 'device' in data:
+                self.devices[parameter] = data['device']['class'](
+                    values_range=(data['min_value'], data['max_value']),
+                    coordinates=data['device']['coordinates'],
+                    initial_value=data['initial_value'],
+                )
 
 
 

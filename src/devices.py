@@ -1,6 +1,7 @@
 import pygame
 
 from src.assets import assets
+from src.utils import rotate_vector
 
 
 class Device:
@@ -79,6 +80,11 @@ class GaugeIndicator(Device):
     HAND_MIN_ANGLE = 120
     HAND_BASE_X = 189
     HAND_BASE_Y = 37
+    PIVOT_X = 205
+    PIVOT_Y = 126
+    CENTRAL_POINT_X = 205
+    CENTRAL_POINT_Y = 205
+    PIVOT_VECTOR = 0, -79
 
     def __init__(self, values_range, coordinates, initial_value):
         super().__init__(values_range, coordinates, initial_value)
@@ -103,7 +109,16 @@ class GaugeIndicator(Device):
         return (full_angle_range * current_value_lambda / full_value_range) + self.HAND_MIN_ANGLE
 
     def hand_image_rotated(self):
-        return pygame.transform.rotate(self.hand_image, self.hand_angle())
+        angle = self.hand_angle()
+        rotated_img = pygame.transform.rotate(self.hand_image, angle)
+        rotated_rect_dimensions = rotated_img.get_rect().size
+        central_point = rotated_rect_dimensions[0]/2, rotated_rect_dimensions[1]/2
+        rotated_vector = rotate_vector(self.PIVOT_VECTOR, angle)
+        coordinates = (
+            self.CENTRAL_POINT_X - central_point[0] + rotated_vector[0],
+            self.CENTRAL_POINT_Y - central_point[1] + rotated_vector[1]
+        )
+        return rotated_img, coordinates
 
     def hand_position(self):
         return self.HAND_BASE_X, self.HAND_BASE_Y
@@ -111,7 +126,8 @@ class GaugeIndicator(Device):
     @property
     def image(self):
         image = self.bg_image.copy()
-        image.blit(self.hand_image_rotated(), self.hand_position())
+        hand_image_rotated, hand_image_coordinates = self.hand_image_rotated()
+        image.blit(hand_image_rotated, hand_image_coordinates)
         return image
 
     @property
