@@ -20,8 +20,7 @@ class DisplayManager:
     def update_display(self):
         for parameter, device in self.devices.items():
             device.update(self.zeppelin.get_parameter(parameter))
-            self.screen.blit(device.bg_image, device.bg_position)
-            self.screen.blit(device.indicator_image, device.indicator_position)
+            self.screen.blit(device.image, device.position)
         pygame.display.flip()
 
     def initialize_background(self):

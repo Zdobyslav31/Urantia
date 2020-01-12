@@ -9,8 +9,10 @@ class AssetLibrary:
             'background': 'background_bronze.jpg',
             'speedometer': 'speedometer.png',
             'clock_hand': 'clock_hand.png',
-            'indicator_panel': 'indicator_panel.png',
+            'indicator_background': 'indicator_panel.png',
             'indicator_hand': 'indicator_hand.png',
+            'gauge_background': 'gauge_bg.png',
+            'gauge_hand': 'clock_hand.png',
         }
 
     def path(self, asset_name):
