@@ -2,12 +2,20 @@ from src.parameters import PARAMETERS
 
 
 class Parameter:
-    def __init__(self, value, min_value, max_value, step):
+    def __init__(self, value=0, min_value=0, max_value=0, snap=None):
         self.value = None
         self.min_value = min_value
         self.max_value = max_value
         self.set_value(value)
-        self.step = step
+        if snap is not None:
+            self.snapping_enabled = True
+            self.snap_to = snap
+        else:
+            self.snapping_enabled = False
+
+    def set_range(self, min_value, max_value):
+        self.min_value = min_value
+        self.max_value = max_value
 
     def set_value(self, value):
         if value > self.max_value:
@@ -17,30 +25,47 @@ class Parameter:
         else:
             self.value = value
 
-    def increase(self):
-        self.set_value(self.value + self.step)
+    def change(self, number, hard=False):
+        if self.snapping_enabled and self.value == self.snap_to and not hard:
+            return
+        self.set_value(self.value + number)
 
-    def decrease(self):
-        self.set_value(self.value - self.step)
+
+class DirectionParameter(Parameter):
+    def __init__(self, value=0, min_value=0, max_value=360, snap=None):
+        Parameter.__init__(self, value, min_value, max_value, snap=snap)
+
+    def set_value(self, value):
+        if value >= self.max_value:
+            self.set_value(value - self.max_value)
+        elif value < self.min_value:
+            self.set_value(value + self.max_value)
+        else:
+            self.value = value
 
 
 class Zeppelin:
     def __init__(self):
-        self.parameters = {}
+        self.parameters = {
+            'pressure': Parameter(),
+            'height': Parameter(),
+            'destined_height': Parameter(),
+            'engine_power': Parameter(snap=0),
+            'acceleration': Parameter(),
+            'destined_velocity': Parameter(),
+            'velocity': Parameter(),
+            'fuel_consumption': Parameter(),
+            'fuel': Parameter(),
+            'angular_velocity': Parameter(snap=0),
+            'direction': DirectionParameter(),
+        }
         for parameter, data in PARAMETERS.items():
-            self.parameters[parameter] = Parameter(
-                data['initial_value'],
-                data['min_value'],
-                data['max_value'],
-                data['step']
-            )
+            self.parameters[parameter].set_range(data['min_value'], data['max_value'])
+            self.parameters[parameter].set_value(data['initial_value'])
 
     def get_parameter(self, parameter):
         return self.parameters[parameter].value
 
-    def increase_parameter(self, parameter):
-        self.parameters[parameter].increase()
-
-    def decrease_parameter(self, parameter):
-        self.parameters[parameter].decrease()
+    def change_parameter(self, parameter, value, hard=False):
+        self.parameters[parameter].change(value, hard=hard)
 

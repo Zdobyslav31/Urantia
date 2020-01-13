@@ -80,8 +80,6 @@ class GaugeIndicator(Device):
     HAND_MIN_ANGLE = 120
     HAND_BASE_X = 189
     HAND_BASE_Y = 37
-    PIVOT_X = 205
-    PIVOT_Y = 126
     CENTRAL_POINT_X = 205
     CENTRAL_POINT_Y = 205
     PIVOT_VECTOR = 0, -79

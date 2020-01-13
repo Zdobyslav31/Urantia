@@ -22,7 +22,7 @@ class Game:
             if event.type == pygame.QUIT or event.type == pygame.KEYUP and event.key == pygame.K_ESCAPE:
                 self.running = False
             elif event.type == pygame.KEYDOWN:
-                self.event_manager.process_event(event.key)
+                self.event_manager.process_event(event.key, hard=True)
         keys = pygame.key.get_pressed()
         if sum(keys):
             for index in range(len(keys)):
