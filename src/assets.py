@@ -13,6 +13,10 @@ class AssetLibrary:
             'indicator_hand': 'indicator_hand.png',
             'gauge_background': 'gauge_bg.png',
             'gauge_hand': 'clock_hand.png',
+            'compass_background': 'compass_bg.png',
+            'compass_hand': 'compass_shield.png',
+            'horizontal_background': 'horizontal_indicator_bg.png',
+            'horizontal_hand': 'horizontal_indicator_hand.png',
         }
 
     def path(self, asset_name):
