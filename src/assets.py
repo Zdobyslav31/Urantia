@@ -17,6 +17,8 @@ class AssetLibrary:
             'compass_hand': 'compass_shield.png',
             'horizontal_background': 'horizontal_indicator_bg.png',
             'horizontal_hand': 'horizontal_indicator_hand.png',
+            'turn_background': 'turn_indicator_bg.png',
+            'turn_hand': 'turn_indicator_hand.png'
         }
 
     def path(self, asset_name):

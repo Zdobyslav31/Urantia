@@ -1,24 +1,36 @@
 import pygame
 
-from src.devices import LevelIndicator, Gauge, Compass, HorizontalSnapIndicator
+from src.devices import LevelIndicator, Gauge, Compass, HorizontalSnapIndicator, TurnIndicator
 
+PRESSURE_PER_1_FUEL_UNIT = 6000
+ACCELERATION_DIVIDER = 20
+DECELERATION_LIMIT = -0.3
+HEIGHT_CHANGE_DIVIDER = 20
+MINIMAL_STEP = 0.2
 
 PARAMETERS = {
+    # Parameters connected with changing height
     'height': {
         'initial_value': 0,
         'min_value': 0,
         'max_value': 3000,
+        'max_step': 7,
         'device': {
             'class': LevelIndicator,
             'coordinates': (100, 50),
         }
     },
+    'destined_height': {
+        'initial_value': 0,
+        'min_value': -200,
+        'max_value': 3000,
+    },
     'pressure': {
-        'initial_value': 1500,
-        'min_value': 700,
-        'max_value': 2000,
+        'initial_value': 3800,
+        'min_value': 800,
+        'max_value': 4000,
         'controller': {
-            'step': 2,
+            'step': 10,
             'increase': pygame.K_p,
             'decrease': pygame.K_l
         },
@@ -28,10 +40,11 @@ PARAMETERS = {
         }
 
     },
+    # Parameters connected with moving forward
     'engine_power': {
         'initial_value': 0,
-        'min_value': -100,
-        'max_value': 100,
+        'min_value': -80,
+        'max_value': 80,
         'controller': {
             'step': 1,
             'increase': pygame.K_w,
@@ -50,7 +63,11 @@ PARAMETERS = {
             'class': Gauge,
             'coordinates': (400, 250),
         }
-
+    },
+    'destined_velocity': {
+        'initial_value': 0,
+        'min_value': -80,
+        'max_value': 80,
     },
     'fuel_consumption': {
         'initial_value': 0,
@@ -71,14 +88,25 @@ PARAMETERS = {
             'coordinates': (1300, 50),
         }
     },
+    'turn': {
+        'initial_value': 0,
+        'min_value': -1,
+        'max_value': 1,
+        'device': {
+            'class': TurnIndicator,
+            'coordinates': (1900, 900),
+        }
+
+    },
+    # Parameters connected with turning
     'angular_velocity': {
         'initial_value': 0,
         'min_value': -30,
         'max_value': 30,
         'controller': {
             'step': 1,
-            'increase': pygame.K_a,
-            'decrease': pygame.K_d
+            'increase': pygame.K_d,
+            'decrease': pygame.K_a
         },
         'device': {
             'class': HorizontalSnapIndicator,

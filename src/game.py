@@ -15,6 +15,7 @@ class Game:
     def run(self):
         while self.running:
             self.controller_tick()
+            self.zeppelin.update_values()
             self.view_tick()
 
     def controller_tick(self):

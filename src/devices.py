@@ -73,8 +73,8 @@ class LevelIndicator(Device):
 
 class HorizontalSnapIndicator(Device):
     HAND_Y_LAMBDA = 25
-    HAND_MAX_X_LAMBDA = 27
-    HAND_MIN_X_LAMBDA = 769
+    HAND_MAX_X_LAMBDA = 769
+    HAND_MIN_X_LAMBDA = 27
 
     def __init__(self, values_range, coordinates, initial_value):
         super().__init__(values_range, coordinates, initial_value)
@@ -107,6 +107,19 @@ class HorizontalSnapIndicator(Device):
         image = self.bg_image.copy()
         image.blit(self.hand_image, self.hand_position())
         return image
+
+
+class TurnIndicator(LevelIndicator):
+    HAND_X_LAMBDA = 19
+    HAND_MAX_Y_LAMBDA = 21
+    HAND_MIN_Y_LAMBDA = 322
+
+    def __init__(self, values_range, coordinates, initial_value):
+        super().__init__(values_range, coordinates, initial_value)
+
+        # Load images
+        self.bg_image = assets.load('turn_background')
+        self.hand_image = assets.load('turn_hand')
 
 
 class Gauge(Device):
