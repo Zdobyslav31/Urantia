@@ -28,6 +28,8 @@ class EventManager:
         return changer
 
     def process_event(self, key, hard=False):
+        if hard and key == pygame.K_v:
+            self.zeppelin.print_values()
         if key in self.key_dict:
             self.key_dict[key](self.zeppelin, hard=hard)
 

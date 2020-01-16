@@ -1,78 +1,5 @@
 from src.parameters import *
-
-
-class Parameter:
-    def __init__(self, value=0, min_value=0, max_value=0, snap=None):
-        self.value = None
-        self.min_value = min_value
-        self.max_value = max_value
-        self.set_value(value)
-        if snap is not None:
-            self.snapping_enabled = True
-            self.snap_to = snap
-        else:
-            self.snapping_enabled = False
-
-    def set_range(self, min_value, max_value):
-        self.min_value = min_value
-        self.max_value = max_value
-
-    def set_value(self, value):
-        if value > self.max_value:
-            self.value = self.max_value
-        elif value < self.min_value:
-            self.value = self.min_value
-        else:
-            self.value = value
-
-    def get_value(self):
-        return self.value
-
-    def change(self, number, hard=False):
-        if self.snapping_enabled and self.value == self.snap_to and not hard:
-            return
-        self.set_value(self.value + number)
-
-
-class DirectionParameter(Parameter):
-    def __init__(self, value=0, min_value=0, max_value=360, snap=None):
-        Parameter.__init__(self, value, min_value, max_value, snap=snap)
-
-    def set_value(self, value):
-        if value >= self.max_value:
-            self.set_value(value - self.max_value)
-        elif value < self.min_value:
-            self.set_value(value + self.max_value)
-        else:
-            self.value = value
-
-
-class VelocityParameter(Parameter):
-    def set_range(self, min_value, max_value):
-        self.min_value = -max_value
-        self.max_value = max_value
-
-    def get_value(self):
-        return abs(self.value)
-
-    def get_turned_value(self):
-        return self.value
-
-    def get_turn(self):
-        if self.value > 0:
-            return 1
-        elif self.value < 0:
-            return -1
-        return 0
-
-
-class HeightParameter(Parameter):
-    def change(self, number, hard=False):
-        if self.value != self.min_value and self.value + number <= self.min_value and number <= -5:
-            print("Łup!")
-        if self.snapping_enabled and self.value == self.snap_to and not hard:
-            return
-        self.set_value(self.value + number)
+from src.const import *
 
 
 class Zeppelin:
@@ -98,9 +25,14 @@ class Zeppelin:
 
         self.pressure_cache = self.get_parameter('pressure')
         self.engine_cache = self.get_parameter('engine_power')
+        self.fuel_consumption_cache = 0
+        self.distance_travelled = 0
 
     def get_parameter(self, parameter):
         return self.parameters[parameter].get_value()
+
+    def get_turned_velocity(self):
+        return self.parameters['velocity'].get_turned_value()
 
     def change_parameter(self, parameter, value, hard=False):
         self.parameters[parameter].change(value, hard=hard)
@@ -108,7 +40,7 @@ class Zeppelin:
     def set_parameter(self, parameter, value):
         self.parameters[parameter].set_value(value)
 
-    def update_values(self):
+    def update_values(self, milliseconds):
         # Update direction based on angular_velocity
         if self.get_parameter('angular_velocity'):
             self.change_parameter('direction', self.get_parameter('angular_velocity')/10)
@@ -116,10 +48,6 @@ class Zeppelin:
         # If pressure has changed, update destined_height
         pressure_change = abs(self.pressure_cache - self.get_parameter('pressure'))
         if pressure_change:
-            self.change_parameter(  # TODO: temporary add this value to fuel consumption
-                'fuel',
-                -pressure_change/PRESSURE_PER_1_FUEL_UNIT
-            )
             self.pressure_cache = self.get_parameter('pressure')
             self.set_parameter('destined_height', self.get_height_from_pressure())
 
@@ -147,17 +75,27 @@ class Zeppelin:
             self.set_parameter('destined_velocity', self.get_velocity_from_engine_power())
 
         # If velocity (turned) != destined_velocity, update velocity
-        velocity_difference = self.get_parameter('destined_velocity') - self.parameters['velocity'].get_turned_value()
+        velocity_difference = self.get_parameter('destined_velocity') - self.get_turned_velocity()
         if abs(velocity_difference) > 0:
             # If difference is minimal, stop the changes to prevent infinite loop
             if abs(velocity_difference) < MINIMAL_STEP:
                 self.set_parameter('velocity', self.get_parameter('destined_velocity'))
             else:
+                self.set_parameter('acceleration', self.get_acceleration(velocity_difference))
                 self.change_parameter(
                     'velocity',
-                    self.get_acceleration(velocity_difference)
+                    self.get_parameter('acceleration')
                 )
             self.set_parameter('turn', self.get_turn())
+
+        # Calculate fuel consumption
+        self.fuel_consumption_cache = self.calculate_fuel_consumption(velocity_difference, pressure_change)
+        self.set_parameter('fuel_consumption', self.fuel_consumption_cache)
+
+        distance = self.get_parameter('velocity') * milliseconds / 1000 / 3600
+        self.distance_travelled += distance
+        consumed_fuel = distance * self.get_parameter('fuel_consumption') / 10
+        self.change_parameter('fuel', -consumed_fuel)
 
     def get_turn(self):
         return self.parameters['velocity'].get_turn()
@@ -170,12 +108,60 @@ class Zeppelin:
         return self.get_parameter('engine_power')
 
     def get_acceleration(self, velocity_difference):
-        if velocity_difference > 0:
+        if not self.is_accelerating():
+            return self.get_velocity_lambda_turn() * min(
+                abs(velocity_difference) / ACCELERATION_DIVIDER / 3,
+                DECELERATION_LIMIT
+            )
+        if self.get_velocity_lambda_turn() > 0:
             return velocity_difference / ACCELERATION_DIVIDER
         else:
-            if self.get_parameter('destined_velocity') > 0:
-                return max(velocity_difference / ACCELERATION_DIVIDER / 3, DECELERATION_LIMIT)
-            else:
-                return velocity_difference / ACCELERATION_DIVIDER / 3
+            return velocity_difference / ACCELERATION_DIVIDER / 3
 
+    def is_accelerating(self):
+        v = self.get_turned_velocity()
+        dv = self.get_parameter('destined_velocity')
+        if dv == 0:
+            return False
+        if v * dv < 0:
+            return True
+        if abs(dv) > abs(v):
+            return True
+        return False
 
+    def get_velocity_lambda_turn(self):
+        v = self.get_turned_velocity()
+        dv = self.get_parameter('destined_velocity')
+        if dv > v:
+            return 1
+        if dv < v:
+            return -1
+        return 0
+
+    def calculate_fuel_consumption(self, velocity_difference, pressure_change):
+        consumption = self.fuel_consumption_from_engine_power()
+        if self.is_accelerating():
+            consumption += abs(velocity_difference) / ACCELERATION_MODIFIER_DIVIDER
+        else:
+            consumption -= abs(velocity_difference) / DECELERATION_MODIFIER_DIVIDER
+        if pressure_change:
+            consumption += abs(pressure_change) / PRESSURE_DIVIDER_MODIFIER
+        return consumption
+
+    def fuel_consumption_from_engine_power(self):
+        power = abs(self.get_parameter('engine_power'))
+        if power == 0:
+            return max(0, self.fuel_consumption_cache - 3)
+        return min(
+            (power - 50) ** 2 / 125 + 10,
+            self.fuel_consumption_cache + 5
+        )
+
+    def print_values(self):
+        print("_________\nCurrent values:")
+        for parameter, data in self.parameters.items():
+            print('{:20}: {}'.format(parameter, data.get_value()))
+        print('distance_travelled  : {}'.format(self.distance_travelled))
+        print('turned_velocity     : {}'.format(self.get_turned_velocity()))
+        print('is_accelerating     : {}'.format(self.is_accelerating()))
+        print('v_lambda_turn       : {}'.format(self.get_velocity_lambda_turn()))

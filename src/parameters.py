@@ -2,11 +2,6 @@ import pygame
 
 from src.devices import LevelIndicator, Gauge, Compass, HorizontalSnapIndicator, TurnIndicator
 
-PRESSURE_PER_1_FUEL_UNIT = 6000
-ACCELERATION_DIVIDER = 20
-DECELERATION_LIMIT = -0.3
-HEIGHT_CHANGE_DIVIDER = 20
-MINIMAL_STEP = 0.2
 
 PARAMETERS = {
     # Parameters connected with changing height
@@ -52,7 +47,7 @@ PARAMETERS = {
         },
         'device': {
             'class': HorizontalSnapIndicator,
-            'coordinates': (700, 1100),
+            'coordinates': (700, 900) # (700, 1100),
         }
     },
     'velocity': {
@@ -64,6 +59,11 @@ PARAMETERS = {
             'coordinates': (400, 250),
         }
     },
+    'acceleration': {
+        'initial_value': 0,
+        'min_value': -80,
+        'max_value': 80,
+    },
     'destined_velocity': {
         'initial_value': 0,
         'min_value': -80,
@@ -72,7 +72,7 @@ PARAMETERS = {
     'fuel_consumption': {
         'initial_value': 0,
         'min_value': 0,
-        'max_value': 50,
+        'max_value': 80,
         'device': {
             'class': Gauge,
             'coordinates': (850, 500),
@@ -80,9 +80,9 @@ PARAMETERS = {
 
     },
     'fuel': {
-        'initial_value': 100,
+        'initial_value': 1000,
         'min_value': 0,
-        'max_value': 100,
+        'max_value': 1000,
         'device': {
             'class': LevelIndicator,
             'coordinates': (1300, 50),
@@ -123,3 +123,77 @@ PARAMETERS = {
         }
     },
 }
+
+
+class Parameter:
+    def __init__(self, value=0, min_value=0, max_value=0, snap=None):
+        self.value = None
+        self.min_value = min_value
+        self.max_value = max_value
+        self.set_value(value)
+        if snap is not None:
+            self.snapping_enabled = True
+            self.snap_to = snap
+        else:
+            self.snapping_enabled = False
+
+    def set_range(self, min_value, max_value):
+        self.min_value = min_value
+        self.max_value = max_value
+
+    def set_value(self, value):
+        if value > self.max_value:
+            self.value = self.max_value
+        elif value < self.min_value:
+            self.value = self.min_value
+        else:
+            self.value = value
+
+    def get_value(self):
+        return self.value
+
+    def change(self, number, hard=False):
+        if self.snapping_enabled and self.value == self.snap_to and not hard:
+            return
+        self.set_value(self.value + number)
+
+
+class DirectionParameter(Parameter):
+    def __init__(self, value=0, min_value=0, max_value=360, snap=None):
+        Parameter.__init__(self, value, min_value, max_value, snap=snap)
+
+    def set_value(self, value):
+        if value >= self.max_value:
+            self.set_value(value - self.max_value)
+        elif value < self.min_value:
+            self.set_value(value + self.max_value)
+        else:
+            self.value = value
+
+
+class VelocityParameter(Parameter):
+    def set_range(self, min_value, max_value):
+        self.min_value = -max_value
+        self.max_value = max_value
+
+    def get_value(self):
+        return abs(self.value)
+
+    def get_turned_value(self):
+        return self.value
+
+    def get_turn(self):
+        if self.value > 0:
+            return 1
+        elif self.value < 0:
+            return -1
+        return 0
+
+
+class HeightParameter(Parameter):
+    def change(self, number, hard=False):
+        if self.value != self.min_value and self.value + number <= self.min_value and number <= -5:
+            print("Łup!")
+        if self.snapping_enabled and self.value == self.snap_to and not hard:
+            return
+        self.set_value(self.value + number)

@@ -11,11 +11,13 @@ class Game:
         self.zeppelin = Zeppelin()
         self.display_manager = DisplayManager(self.zeppelin)
         self.event_manager = EventManager(self.zeppelin)
+        self.clock = pygame.time.Clock()
 
     def run(self):
         while self.running:
+            milliseconds_passed = self.clock.tick()
             self.controller_tick()
-            self.zeppelin.update_values()
+            self.zeppelin.update_values(milliseconds_passed)
             self.view_tick()
 
     def controller_tick(self):
