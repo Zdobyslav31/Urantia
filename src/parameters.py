@@ -40,6 +40,7 @@ PARAMETERS = {
         'min_value': -10,
         'max_value': 10,
     },
+
     # Parameters connected with moving forward
     'engine_power': {
         'initial_value': 0,
@@ -52,7 +53,7 @@ PARAMETERS = {
         },
         'device': {
             'class': HorizontalSnapIndicator,
-            'coordinates': (700, 900) # (700, 1100),
+            'coordinates': (700, 1100),
         }
     },
     'velocity': {
@@ -103,6 +104,7 @@ PARAMETERS = {
         }
 
     },
+
     # Parameters connected with turning
     'angular_velocity': {
         'initial_value': 0,
@@ -204,8 +206,11 @@ class TurnedParameter(Parameter):
 
 class HeightParameter(Parameter):
     def change(self, number, hard=False):
+        crash = None
         if self.value != self.min_value and self.value + number <= self.min_value and number <= -5:
             print("Łup!")
+            crash = True
         if self.snapping_enabled and self.value == self.snap_to and not hard:
             return
         self.set_value(self.value + number)
+        return crash

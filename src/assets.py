@@ -30,9 +30,22 @@ assets = AssetLibrary()
 
 
 class Sound:
-    def __init__(self, filename, values_range):
+    def __init__(self, filename):
         self.file = pygame.mixer.Sound(SOUNDS_PATH + filename)
         self.playing = False
+
+    def start_playing(self):
+        self.file.play()
+        self.playing = True
+
+    def stop_playing(self):
+        self.file.stop()
+        self.playing = False
+
+
+class ParameterSound(Sound):
+    def __init__(self, filename, values_range):
+        super().__init__(filename)
         self.min_value = values_range[0]
         self.max_value = values_range[1]
 
@@ -53,19 +66,25 @@ class Sound:
 
 class SoundController:
     def __init__(self, zeppelin):
-        self.asset_dict = {
+        self.parameter_sound_files = {
             'pressure_change': 'diffuser.ogg',
             'engine_power': 'engine.ogg',
             'velocity': 'cabin.ogg',
         }
+        self.other_sounds = {
+            'crash': 'crash.wav'
+        }
         self.zeppelin = zeppelin
+        self.parameter_sounds = {}
         self.sounds = {}
-        for parameter, filename in self.asset_dict.items():
-            self.sounds[parameter] = Sound(filename, zeppelin.get_range(parameter))
+        for parameter, filename in self.parameter_sound_files.items():
+            self.parameter_sounds[parameter] = ParameterSound(filename, zeppelin.get_range(parameter))
+        for name, filename in self.other_sounds.items():
+            self.sounds[name] = Sound(filename)
 
     def update_sounds(self):
-        for parameter, sound in self.sounds.items():
-            value = self.zeppelin.get_parameter(parameter)
+        for parameter, sound in self.parameter_sounds.items():
+            value = abs(self.zeppelin.get_parameter(parameter))
             if not value:
                 if sound.playing:
                     sound.stop_playing()
@@ -74,6 +93,12 @@ class SoundController:
                 if not sound.playing:
                     sound.start_playing()
 
+    def crash_sound(self):
+        for parameter, sound in self.parameter_sounds.items():
+            if sound.playing:
+                sound.stop_playing()
+        if not self.sounds['crash'].playing:
+            self.sounds['crash'].start_playing()
 
 
 

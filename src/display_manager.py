@@ -36,6 +36,9 @@ class DisplayManager:
                     initial_value=data['initial_value'],
                 )
 
+    def black_screen(self):
+        self.screen.fill((0, 0, 0))
+        pygame.display.flip()
 
 
 

@@ -20,8 +20,17 @@ class Game:
             milliseconds_passed = self.clock.tick()
             self.controller_tick()
             self.zeppelin.update_values(milliseconds_passed)
+            if self.zeppelin.crashed:
+                self.game_over()
             self.view_tick()
             self.sound_tick()
+
+    def game_over(self):
+        while self.running:
+            milliseconds_passed = self.clock.tick()
+            self.controller_tick()
+            self.sound_controller.crash_sound()
+            self.display_manager.black_screen()
 
     def controller_tick(self):
         for event in pygame.event.get():

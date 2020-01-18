@@ -31,6 +31,8 @@ class Zeppelin:
         self.pressure_change = 0
         self.velocity_difference = 0
 
+        self.crashed = None
+
     def get_parameter(self, parameter):
         return self.parameters[parameter].get_value()
 
@@ -41,16 +43,14 @@ class Zeppelin:
         return self.parameters['velocity'].get_turned_value()
 
     def change_parameter(self, parameter, value, hard=False):
-        self.parameters[parameter].change(value, hard=hard)
+        crash = self.parameters[parameter].change(value, hard=hard)
+        if crash:
+            self.crashed = True
 
     def set_parameter(self, parameter, value):
         self.parameters[parameter].set_value(value)
 
     def update_values(self, milliseconds):
-        # Update direction based on angular_velocity
-        if self.get_parameter('angular_velocity'):
-            self.change_parameter('direction', self.get_parameter('angular_velocity')/10)
-
         # If pressure has changed, update destined_height
         self.set_parameter('pressure_change', abs(self.pressure_cache - self.get_parameter('pressure')))
         if self.get_parameter('pressure_change'):
@@ -93,6 +93,14 @@ class Zeppelin:
                     self.get_parameter('acceleration')
                 )
             self.set_parameter('turn', self.get_turn())
+
+
+        # Update direction based on angular_velocity and velocity
+        if self.get_parameter('angular_velocity'):
+            self.change_parameter(
+                'direction',
+                self.get_parameter('angular_velocity') * self.get_turned_velocity() / 500
+            )
 
         # Calculate fuel consumption
         self.fuel_consumption_cache = self.calculate_fuel_consumption()
@@ -171,3 +179,4 @@ class Zeppelin:
         print('turned_velocity     : {}'.format(self.get_turned_velocity()))
         print('is_accelerating     : {}'.format(self.is_accelerating()))
         print('v_lambda_turn       : {}'.format(self.get_velocity_lambda_turn()))
+        print('CRASHED             : {}'.format(self.crashed))
