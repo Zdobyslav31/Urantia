@@ -44,12 +44,10 @@ class Sound:
         self.file.set_volume(self.calculate_volume_for_value(value))
 
     def calculate_volume_for_value(self, value):
-        current_range = (value - self.min_value)
-        full_range = (self.max_value - self.min_value)
-        return current_range / full_range
+        return value / self.max_value
 
     def stop_playing(self):
-        self.file.fadeout(500)
+        self.file.fadeout(100)
         self.playing = False
 
 
@@ -57,8 +55,8 @@ class SoundController:
     def __init__(self, zeppelin):
         self.asset_dict = {
             'pressure_change': 'diffuser.ogg',
-            'engine_power': 'engine.wav',
-            'velocity': 'cabin.wav',
+            'engine_power': 'engine.ogg',
+            'velocity': 'cabin.ogg',
         }
         self.zeppelin = zeppelin
         self.sounds = {}
