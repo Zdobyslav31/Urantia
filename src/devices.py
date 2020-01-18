@@ -73,7 +73,7 @@ class LevelIndicator(Device):
     def generate_labels(self):
         font = pygame.font.SysFont("victorianparlorvintagealternate", 30)
         labels = []
-        for label_number in range(self.LABELS_COUNT + 1):
+        for label_number in range(self.LABELS_COUNT):
             full_range = self.max_value - self.min_value
             value = int(self.min_value + full_range / (self.LABELS_COUNT - 1) * label_number)
             y_pos = self.label_y_pos(value)
@@ -164,6 +164,17 @@ class Gauge(Device):
     CENTRAL_POINT_X = 205
     CENTRAL_POINT_Y = 205
     PIVOT_VECTOR = 0, -79
+    LABELS_COORDINATES = [
+        ('s', 74 , 268),
+        ('s', 54 , 190),
+        ('s', 75 , 117),
+        ('s', 115, 73 ),
+        ('m', 205, 52 ),
+        ('e', 295, 73 ),
+        ('e', 335, 117),
+        ('e', 356, 190),
+        ('e', 335, 268),
+    ]
 
     def __init__(self, values_range, coordinates, initial_value):
         super().__init__(values_range, coordinates, initial_value)
@@ -171,6 +182,8 @@ class Gauge(Device):
         # Load images
         self.bg_image = assets.load_image('gauge_background')
         self.hand_image = assets.load_image('gauge_hand')
+
+        self.labels = self.generate_labels()
 
     def hand_angle(self):
         """Return rotation angle of the hand, calculated from its value"""
@@ -199,9 +212,39 @@ class Gauge(Device):
         )
         return rotated_img, coordinates
 
+    def generate_labels(self):
+        font = pygame.font.SysFont("victorianparlorvintagealternate", 30)
+        labels_count = len(self.LABELS_COORDINATES)
+        labels = []
+        for label_number in range(labels_count):
+            full_range = self.max_value - self.min_value
+            value = int(self.min_value + full_range / (labels_count - 1) * label_number)
+            text = font.render(str(value), True, (0, 0, 0))
+            labels.append((
+                text,
+                (
+                    self.label_coordinates(*self.LABELS_COORDINATES[label_number], text.get_width())
+                )
+            ))
+        return labels
+
+    def label_coordinates(self, mode, x, y, width):
+        if mode == 's':
+            return x, y
+        if mode == 'm':
+            return x - width / 2, y
+        if mode == 'e':
+            return x - width, y
+
+    def blit_labels(self, image):
+        for label in self.labels:
+            image.blit(*label)
+        return image
+
     @property
     def image(self):
         image = self.bg_image.copy()
+        image = self.blit_labels(image)
         hand_image_rotated, hand_image_coordinates = self.hand_image_rotated()
         image.blit(hand_image_rotated, hand_image_coordinates)
         return image
