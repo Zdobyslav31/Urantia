@@ -85,9 +85,9 @@ PARAMETERS = {
 
     },
     'fuel': {
-        'initial_value': 1000,
+        'initial_value': 500,
         'min_value': 0,
-        'max_value': 1000,
+        'max_value': 500,
         'device': {
             'class': LevelIndicator,
             'coordinates': (1300, 50),

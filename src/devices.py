@@ -37,6 +37,10 @@ class LevelIndicator(Device):
     HAND_X_LAMBDA = 25
     HAND_MAX_Y_LAMBDA = 25
     HAND_MIN_Y_LAMBDA = 769
+    LABELS_COUNT = 11
+    LABEL_X = 36
+    LABEL_MAX_Y = 33
+    LABEL_MIN_Y = 750
 
     def __init__(self, values_range, coordinates, initial_value):
         super().__init__(values_range, coordinates, initial_value)
@@ -44,6 +48,8 @@ class LevelIndicator(Device):
         # Load images
         self.bg_image = assets.load_image('indicator_background')
         self.hand_image = assets.load_image('indicator_hand')
+
+        self.labels = self.generate_labels()
 
     def hand_y_pos(self):
         """Return y coordinate of the hand, calculated from its value"""
@@ -64,9 +70,39 @@ class LevelIndicator(Device):
         """Returns a tuple of (x, y) coordinates of the hand"""
         return self.HAND_X_LAMBDA, self.hand_y_pos()
 
+    def generate_labels(self):
+        font = pygame.font.SysFont("victorianparlorvintagealternate", 30)
+        labels = []
+        for label_number in range(self.LABELS_COUNT + 1):
+            full_range = self.max_value - self.min_value
+            value = int(self.min_value + full_range / (self.LABELS_COUNT - 1) * label_number)
+            y_pos = self.label_y_pos(value)
+            labels.append((
+                font.render(str(value), True, (0, 0, 0)),
+                (
+                    self.LABEL_X,
+                    y_pos
+                )
+            ))
+        return labels
+
+    def label_y_pos(self, value):
+        full_y_range = self.LABEL_MAX_Y - self.LABEL_MIN_Y
+        full_value_range = self.max_value - self.min_value
+        current_value_lambda = value - self.min_value
+
+        # current_value_lambda / full_value_range = current_y_lambda / full_y_range
+        return (full_y_range * current_value_lambda / full_value_range) + self.LABEL_MIN_Y
+
+    def blit_labels(self, image):
+        for label in self.labels:
+            image.blit(*label)
+        return image
+
     @property
     def image(self):
         image = self.bg_image.copy()
+        image = self.blit_labels(image)
         image.blit(self.hand_image, self.hand_position())
         return image
 
