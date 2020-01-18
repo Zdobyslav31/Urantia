@@ -3,6 +3,7 @@ import pygame
 from src.display_manager import DisplayManager
 from src.event_manager import EventManager
 from src.zeppelin import Zeppelin
+from src.assets import SoundController
 
 
 class Game:
@@ -11,6 +12,7 @@ class Game:
         self.zeppelin = Zeppelin()
         self.display_manager = DisplayManager(self.zeppelin)
         self.event_manager = EventManager(self.zeppelin)
+        self.sound_controller = SoundController(self.zeppelin)
         self.clock = pygame.time.Clock()
 
     def run(self):
@@ -19,6 +21,7 @@ class Game:
             self.controller_tick()
             self.zeppelin.update_values(milliseconds_passed)
             self.view_tick()
+            self.sound_tick()
 
     def controller_tick(self):
         for event in pygame.event.get():
@@ -34,3 +37,6 @@ class Game:
 
     def view_tick(self):
         self.display_manager.update_display()
+
+    def sound_tick(self):
+        self.sound_controller.update_sounds()

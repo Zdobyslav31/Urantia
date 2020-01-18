@@ -35,6 +35,11 @@ PARAMETERS = {
         }
 
     },
+    'pressure_change': {
+        'initial_value': 0,
+        'min_value': -10,
+        'max_value': 10,
+    },
     # Parameters connected with moving forward
     'engine_power': {
         'initial_value': 0,
@@ -141,6 +146,9 @@ class Parameter:
         self.min_value = min_value
         self.max_value = max_value
 
+    def get_range(self):
+        return self.min_value, self.max_value
+
     def set_value(self, value):
         if value > self.max_value:
             self.value = self.max_value
@@ -171,7 +179,8 @@ class DirectionParameter(Parameter):
             self.value = value
 
 
-class VelocityParameter(Parameter):
+class TurnedParameter(Parameter):
+    # Turned parameter has negative values hidden by default
     def set_range(self, min_value, max_value):
         self.min_value = -max_value
         self.max_value = max_value
@@ -188,6 +197,9 @@ class VelocityParameter(Parameter):
         elif self.value < 0:
             return -1
         return 0
+
+    def get_range(self):
+        return 0, self.max_value
 
 
 class HeightParameter(Parameter):

@@ -42,8 +42,8 @@ class LevelIndicator(Device):
         super().__init__(values_range, coordinates, initial_value)
         
         # Load images
-        self.bg_image = assets.load('indicator_background')
-        self.hand_image = assets.load('indicator_hand')
+        self.bg_image = assets.load_image('indicator_background')
+        self.hand_image = assets.load_image('indicator_hand')
 
     def hand_y_pos(self):
         """Return y coordinate of the hand, calculated from its value"""
@@ -80,8 +80,8 @@ class HorizontalSnapIndicator(Device):
         super().__init__(values_range, coordinates, initial_value)
 
         # Load images
-        self.bg_image = assets.load('horizontal_background')
-        self.hand_image = assets.load('horizontal_hand')
+        self.bg_image = assets.load_image('horizontal_background')
+        self.hand_image = assets.load_image('horizontal_hand')
 
     def hand_x_pos(self):
         """Return y coordinate of the hand, calculated from its value"""
@@ -118,8 +118,8 @@ class TurnIndicator(LevelIndicator):
         super().__init__(values_range, coordinates, initial_value)
 
         # Load images
-        self.bg_image = assets.load('turn_background')
-        self.hand_image = assets.load('turn_hand')
+        self.bg_image = assets.load_image('turn_background')
+        self.hand_image = assets.load_image('turn_hand')
 
 
 class Gauge(Device):
@@ -133,8 +133,8 @@ class Gauge(Device):
         super().__init__(values_range, coordinates, initial_value)
 
         # Load images
-        self.bg_image = assets.load('gauge_background')
-        self.hand_image = assets.load('gauge_hand')
+        self.bg_image = assets.load_image('gauge_background')
+        self.hand_image = assets.load_image('gauge_hand')
 
     def hand_angle(self):
         """Return rotation angle of the hand, calculated from its value"""
@@ -181,8 +181,8 @@ class Compass(Device):
         super().__init__(values_range, coordinates, initial_value)
 
         # Load images
-        self.bg_image = assets.load('compass_background')
-        self.hand_image = assets.load('compass_hand')
+        self.bg_image = assets.load_image('compass_background')
+        self.hand_image = assets.load_image('compass_hand')
 
     def shield_angle(self):
         """Return rotation angle of the hand, calculated from its value"""

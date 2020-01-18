@@ -24,7 +24,7 @@ class DisplayManager:
         pygame.display.flip()
 
     def initialize_background(self):
-        background = assets.load('background')
+        background = assets.load_image('background')
         self.screen.blit(background, (0, 0))
 
     def initialize_devices(self):
