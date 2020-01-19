@@ -134,6 +134,7 @@ PARAMETERS = {
 
 
 class Parameter:
+    """Basic parameter of a zeppelin"""
     def __init__(self, value=0, min_value=0, max_value=0, snap=None):
         self.value = None
         self.min_value = min_value
@@ -146,6 +147,7 @@ class Parameter:
             self.snapping_enabled = False
 
     def set_range(self, min_value, max_value):
+        """Function called once  in the beginning, to set the max range"""
         self.min_value = min_value
         self.max_value = max_value
 
@@ -153,6 +155,7 @@ class Parameter:
         return self.min_value, self.max_value
 
     def set_value(self, value):
+        """Set value so that it fits in parameter's range limits"""
         if value > self.max_value:
             self.value = self.max_value
         elif value < self.min_value:
@@ -164,12 +167,14 @@ class Parameter:
         return self.value
 
     def change(self, number, hard=False):
+        """Increase the value by number"""
         if self.snapping_enabled and self.value == self.snap_to and not hard:
             return
         self.set_value(self.value + number)
 
 
 class DirectionParameter(Parameter):
+    """Continuous parameter, used for direction (0-360) implementation"""
     def __init__(self, value=0, min_value=0, max_value=360, snap=None):
         Parameter.__init__(self, value, min_value, max_value, snap=snap)
 
@@ -183,7 +188,7 @@ class DirectionParameter(Parameter):
 
 
 class TurnedParameter(Parameter):
-    # Turned parameter has negative values hidden by default
+    """Parameter that can have positive or  negative values, but the negative ones are hidden by default"""
     def set_range(self, min_value, max_value):
         self.min_value = -max_value
         self.max_value = max_value
@@ -206,6 +211,7 @@ class TurnedParameter(Parameter):
 
 
 class HeightParameter(Parameter):
+    """Parameter with crash control, when 0 level is achieved too fast"""
     def change(self, number, hard=False):
         crash = None
         if self.value != self.min_value and self.value + number <= self.min_value and number <= -5:

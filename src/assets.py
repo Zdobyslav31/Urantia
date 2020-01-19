@@ -5,6 +5,7 @@ SOUNDS_PATH = 'assets/sounds/'
 
 
 class AssetLibrary:
+    """Object responsible for loading image assets"""
     def __init__(self):
         self.asset_dict = {
             'background': 'background_bronze.jpg',
@@ -30,6 +31,7 @@ assets = AssetLibrary()
 
 
 class Sound:
+    """Single played sound"""
     def __init__(self, filename):
         self.file = pygame.mixer.Sound(SOUNDS_PATH + filename)
         self.playing = False
@@ -44,6 +46,7 @@ class Sound:
 
 
 class ParameterSound(Sound):
+    """Sound illustrating a parameter, playing continuously"""
     def __init__(self, filename, values_range):
         super().__init__(filename)
         self.min_value = values_range[0]
@@ -65,6 +68,7 @@ class ParameterSound(Sound):
 
 
 class SoundController:
+    """Object responsible for managing sounds in the gamme"""
     def __init__(self, zeppelin):
         self.parameter_sound_files = {
             'pressure_change': 'diffuser.ogg',
@@ -83,6 +87,7 @@ class SoundController:
             self.sounds[name] = Sound(filename)
 
     def update_sounds(self):
+        """Update all parameter sounds"""
         for parameter, sound in self.parameter_sounds.items():
             value = abs(self.zeppelin.get_parameter(parameter))
             if not value:
@@ -94,6 +99,7 @@ class SoundController:
                     sound.start_playing()
 
     def crash_sound(self):
+        """Play a crash sound when zeppelin crashes"""
         for parameter, sound in self.parameter_sounds.items():
             if sound.playing:
                 sound.stop_playing()

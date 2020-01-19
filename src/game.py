@@ -16,16 +16,19 @@ class Game:
         self.clock = pygame.time.Clock()
 
     def run(self):
+        """The main loop iterating as long,  as the game is running"""
         while self.running:
             milliseconds_passed = self.clock.tick()
             self.controller_tick()
             self.zeppelin.update_values(milliseconds_passed)
             if self.zeppelin.crashed:
                 self.game_over()
-            self.view_tick()
-            self.sound_tick()
+            else:
+                self.view_tick()
+                self.sound_tick()
 
     def game_over(self):
+        """View the black screen when zeppelin is crashed"""
         while self.running:
             milliseconds_passed = self.clock.tick()
             self.controller_tick()
@@ -33,13 +36,19 @@ class Game:
             self.display_manager.black_screen()
 
     def controller_tick(self):
+        """Get all events and send them to the event managr"""
         for event in pygame.event.get():
+            # Stop the game when quit signal appears
             if event.type == pygame.QUIT or event.type == pygame.KEYUP and event.key == pygame.K_ESCAPE:
                 self.running = False
+            # When a button starts to be pressed, process an event with hard=True
             elif event.type == pygame.KEYDOWN:
                 self.event_manager.process_event(event.key, hard=True)
+
+        # Also get all keys that continue to be pressed
         keys = pygame.key.get_pressed()
-        if sum(keys):
+        if sum(keys):   # if any keys are currently pressed
+            # Process an event with hard=False (default)
             for index in range(len(keys)):
                 if keys[index]:
                     self.event_manager.process_event(index)
