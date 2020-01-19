@@ -79,6 +79,7 @@ PARAMETERS = {
         'initial_value': 0,
         'min_value': 0,
         'max_value': 80,
+        'step': 5,
         'device': {
             'class': Gauge,
             'coordinates': (850, 500),

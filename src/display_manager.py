@@ -18,10 +18,12 @@ class DisplayManager:
         pygame.display.flip()
 
     def update_display(self):
+        dirty_rects = []
         for parameter, device in self.devices.items():
             device.update(self.zeppelin.get_parameter(parameter))
-            self.screen.blit(device.image, device.position)
-        pygame.display.flip()
+            rect = self.screen.blit(device.image, device.position)
+            dirty_rects.append(rect)
+        pygame.display.update(dirty_rects)
 
     def initialize_background(self):
         background = assets.load_image('background')

@@ -157,6 +157,12 @@ class TurnIndicator(LevelIndicator):
         self.bg_image = assets.load_image('turn_background')
         self.hand_image = assets.load_image('turn_hand')
 
+    @property
+    def image(self):
+        image = self.bg_image.copy()
+        image.blit(self.hand_image, self.hand_position())
+        return image
+
 
 class Gauge(Device):
     HAND_MAX_ANGLE = -120

@@ -159,13 +159,20 @@ class Zeppelin:
         else:
             consumption -= abs(self.velocity_difference) / DECELERATION_MODIFIER_DIVIDER
         if self.get_parameter('pressure_change'):
+            print(consumption)
+            print(self.get_parameter('pressure_change'))
             consumption += abs(self.get_parameter('pressure_change')) / PRESSURE_DIVIDER_MODIFIER
+
+        if consumption - self.fuel_consumption_cache > PARAMETERS['fuel_consumption']['step']:
+            consumption = self.fuel_consumption_cache + PARAMETERS['fuel_consumption']['step']
+        elif self.fuel_consumption_cache - consumption > PARAMETERS['fuel_consumption']['step']:
+            consumption = self.fuel_consumption_cache - PARAMETERS['fuel_consumption']['step']
         return consumption
 
     def fuel_consumption_from_engine_power(self):
         power = abs(self.get_parameter('engine_power'))
         if power == 0:
-            return max(0, self.fuel_consumption_cache - 3)
+            return 0
         return min(
             (power - 50) ** 2 / 125 + 10,
             self.fuel_consumption_cache + 5
