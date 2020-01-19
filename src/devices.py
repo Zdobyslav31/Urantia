@@ -250,8 +250,8 @@ class Gauge(Device):
         font = pygame.font.SysFont("victorianparlorvintagealternate", 30)
         labels_count = len(self.LABELS_COORDINATES)
         labels = []
+        full_range = self.max_value - self.min_value
         for label_number in range(labels_count):
-            full_range = self.max_value - self.min_value
             value = int(self.min_value + full_range / (labels_count - 1) * label_number)
             text = font.render(str(value), True, (0, 0, 0))
             labels.append((

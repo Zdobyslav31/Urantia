@@ -130,16 +130,18 @@ PARAMETERS = {
             'coordinates': (1820, 200),
         }
     },
+    'coordinates': {
+        'initial_value': (0, 0)
+    }
 }
 
 
 class Parameter:
     """Basic parameter of a zeppelin"""
-    def __init__(self, value=0, min_value=0, max_value=0, snap=None):
+    def __init__(self, snap=None):
         self.value = None
-        self.min_value = min_value
-        self.max_value = max_value
-        self.set_value(value)
+        self.min_value = None
+        self.max_value  =None
         if snap is not None:
             self.snapping_enabled = True
             self.snap_to = snap
@@ -176,7 +178,7 @@ class Parameter:
 class DirectionParameter(Parameter):
     """Continuous parameter, used for direction (0-360) implementation"""
     def __init__(self, value=0, min_value=0, max_value=360, snap=None):
-        Parameter.__init__(self, value, min_value, max_value, snap=snap)
+        Parameter.__init__(self, snap=snap)
 
     def set_value(self, value):
         if value >= self.max_value:
@@ -221,3 +223,27 @@ class HeightParameter(Parameter):
             return
         self.set_value(self.value + number)
         return crash
+
+class TwoDimensionalParameter(Parameter):
+    """
+    Parameter of two values, used for zeppelin coordinates implementation
+    Self.value is a tuple
+    This object does not implement min_value and max_value
+    """
+    def __init__(self, snap=None):
+        super().__init__(snap=snap)
+        self.value = (None, None)
+
+    def get_range(self):
+        return None, None
+
+    def set_value(self, values: tuple):
+        """Set value so that it fits in parameter's range limits"""
+        self.value = (values[0], values[1])
+
+    def get_value(self):
+        return self.value
+
+    def change(self, numbers: tuple, hard=False):
+        """Increase the value by numbers"""
+        self.set_value((self.value[0] + numbers[0], self.value[1] + numbers[1]))

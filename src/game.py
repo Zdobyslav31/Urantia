@@ -36,7 +36,7 @@ class Game:
             self.display_manager.black_screen()
 
     def controller_tick(self):
-        """Get all events and send them to the event managr"""
+        """Get all events and send them to the event manager"""
         for event in pygame.event.get():
             # Stop the game when quit signal appears
             if event.type == pygame.QUIT or event.type == pygame.KEYUP and event.key == pygame.K_ESCAPE:

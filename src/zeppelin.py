@@ -1,5 +1,6 @@
 from src.parameters import *
 from src.const import *
+from src.utils import rotate_vector
 
 
 class Zeppelin:
@@ -19,10 +20,12 @@ class Zeppelin:
             'angular_velocity': Parameter(snap=0),
             'direction': DirectionParameter(),
             'pressure_change': TurnedParameter(),
+            'coordinates': TwoDimensionalParameter()
         }
 
         for parameter, data in PARAMETERS.items():
-            self.parameters[parameter].set_range(data['min_value'], data['max_value'])
+            if 'min_value' in data and 'max_value' in data:
+                self.parameters[parameter].set_range(data['min_value'], data['max_value'])
             self.parameters[parameter].set_value(data['initial_value'])
 
         self.pressure_cache = self.get_parameter('pressure')
@@ -114,6 +117,7 @@ class Zeppelin:
         # Calculate the distance
         distance = self.get_parameter('velocity') * milliseconds / 1000 / 3600
         self.distance_travelled += distance
+        self.change_parameter('coordinates', rotate_vector((0, -distance), -self.get_parameter('direction')))
 
         # Calculate how much fuel has been consumed during last frame
         consumed_fuel = distance * self.get_parameter('fuel_consumption') / 10
