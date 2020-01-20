@@ -87,7 +87,7 @@ PARAMETERS = {
 
     },
     'fuel': {
-        'initial_value': 500,
+        'initial_value':  500,
         'min_value': 0,
         'max_value': 500,
         'device': {

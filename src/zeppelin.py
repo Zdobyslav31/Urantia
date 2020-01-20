@@ -56,6 +56,9 @@ class Zeppelin:
 
     def update_values(self, milliseconds):
         """Function updates all the values, that are calculated on the basis of other parameters"""
+        # If no fuel, turn off the engine
+        if not self.get_parameter('fuel'):
+            self.turn_off_engine()
 
         # If pressure has changed, update destined_height
         self.set_parameter('pressure_change', abs(self.pressure_cache - self.get_parameter('pressure')))
@@ -201,6 +204,18 @@ class Zeppelin:
         if power == 0:
             return 0
         return (power - 50) ** 2 / 125 + 10
+
+    def turn_off_engine(self):
+        self.set_parameter('pressure', self.pressure_cache)
+        power = self.get_parameter('engine_power')
+        if not power:
+            return
+        if power > 5:
+            self.change_parameter('engine_power', -5)
+        elif power <  -5:
+            self.change_parameter('engine_power', 5)
+        else:
+            self.set_parameter('engine_power', 0)
 
     def print_values(self):
         print("_________\nCurrent values:")
