@@ -26,8 +26,8 @@ PARAMETERS = {
         'max_value': 4000,
         'controller': {
             'step': 10,
-            'increase': pygame.K_p,
-            'decrease': pygame.K_l
+            'increase': pygame.K_w,
+            'decrease': pygame.K_z
         },
         'device': {
             'class': Gauge,
@@ -48,8 +48,8 @@ PARAMETERS = {
         'max_value': 80,
         'controller': {
             'step': 1,
-            'increase': pygame.K_w,
-            'decrease': pygame.K_s
+            'increase': pygame.K_k,
+            'decrease': pygame.K_h
         },
         'device': {
             'class': HorizontalSnapIndicator,
@@ -87,9 +87,9 @@ PARAMETERS = {
 
     },
     'fuel': {
-        'initial_value':  500,
+        'initial_value':  550,
         'min_value': 0,
-        'max_value': 500,
+        'max_value': 550,
         'device': {
             'class': LevelIndicator,
             'coordinates': (1300, 50),
@@ -113,8 +113,8 @@ PARAMETERS = {
         'max_value': 30,
         'controller': {
             'step': 1,
-            'increase': pygame.K_d,
-            'decrease': pygame.K_a
+            'increase': pygame.K_RIGHT,
+            'decrease': pygame.K_LEFT
         },
         'device': {
             'class': HorizontalSnapIndicator,

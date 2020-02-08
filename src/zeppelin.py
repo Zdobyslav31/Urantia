@@ -190,7 +190,7 @@ class Zeppelin:
         if self.get_parameter('pressure_change'):
             consumption += abs(self.get_parameter('pressure_change')) / PRESSURE_DIVIDER_MODIFIER
 
-        # Limit the ultimate value to the max step, so thet the indicator hand goes smoothly
+        # Limit the ultimate value to the max step, so that the indicator hand goes smoothly
         if consumption - self.fuel_consumption_cache > PARAMETERS['fuel_consumption']['step']:
             consumption = self.fuel_consumption_cache + PARAMETERS['fuel_consumption']['step']
         elif self.fuel_consumption_cache - consumption > PARAMETERS['fuel_consumption']['step']:
