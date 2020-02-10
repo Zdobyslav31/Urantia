@@ -11,13 +11,13 @@ It was designed for a larp game "Podniebna Zagadka", set in steampunk convention
 
 ## Inputs
 - Changing engine power:
-  - increase: W
-  - decrease: S
+  - increase: `k`
+  - decrease: `h`
 - Changing pressure:
-  - increase: P
-  - decrease: L
+  - increase: `w`
+  - decrease: `z`
 - Changing stabilizers aberrance:
-  - left: A
-  - right: D
-- Print out zeppelin parameters in console: V
-- Quit game: Esc
+  - left: `arrow_left`
+  - right: `arrow_right`
+- Print out zeppelin parameters in console: `v`
+- Quit game: `Esc`
