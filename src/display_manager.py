@@ -3,7 +3,7 @@ import pygame
 from src.assets import assets
 from src.parameters import PARAMETERS
 
-FULLSCREEN = False
+FULLSCREEN = True
 SCREEN_SIZE = (2560, 1440)
 
 
