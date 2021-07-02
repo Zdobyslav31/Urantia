@@ -21,3 +21,6 @@ It was designed for a larp game "Podniebna Zagadka", set in steampunk convention
   - right: `arrow_right`
 - Print out zeppelin parameters in console: `v`
 - Quit game: `Esc`
+
+## Notes
+Currently this simulator supports only 2560x1440 displays.
